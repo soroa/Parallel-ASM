@@ -1,4 +1,4 @@
-// Dynamic Programming - D table : O(n)
+// Dynamic Programming - D table : m threads, O(n) in theory
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -12,8 +12,7 @@ int **D;
 void *thread_routine(void *arg)
 {
     int i = *((int *)arg);
-    for (int j = 1; j <= n; j++)
-    {
+    for (int j = 1; j <= n; j++) {
         while(D[i-1][j] == -1) {
             // printf("wait D[%d, %d]\n", i-1, j);
         }
