@@ -1,4 +1,4 @@
-// Dynamic Programming - D table : O(mn) //???
+// Dynamic Programming - D table : O(n)
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
