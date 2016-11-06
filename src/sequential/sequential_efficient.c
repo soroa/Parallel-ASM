@@ -19,7 +19,7 @@ struct Triple *triple;
 
 void set_C_table(int i, int j, int value)
 {
-    C[i+1][j+k+1] = value;
+    C[i+1][j+k+1] = value;      
 }
 
 int get_C_table(int i, int j)
@@ -45,11 +45,11 @@ int within(int t, int *r)
 void preprocess(char *pattern)
 {
     // Initialize C table
-    for (int d = 0; d <= (n-m+k+1); d++)
-        set_C_table(-1, d, d-1);
-    for (int d = -(k+1); d <= -1; d++)
+    for (int d = 0; d <= (n-m+k+1); d++) //Parallelize 
+        set_C_table(-1, d, d-1); 
+    for (int d = -(k+1); d <= -1; d++) //Parallelize 
     {
-        set_C_table(-d-1, d, -1);
+        set_C_table(-d-1, d, -1);    
         set_C_table(-d-2, d, INT_MIN);
     }
     // Initialize prefix array
@@ -92,7 +92,7 @@ int main(int argc, char *argv[])
     for (int i = 0; i < m+1; i++)
         prefix[i] = (int *)malloc((m+1) * sizeof(int));
     triple = (struct Triple *)malloc((k+1) * sizeof(struct Triple));
-
+ 
     preprocess(pattern);
         
     for (int c = 0; c <= n-m+k; c++)

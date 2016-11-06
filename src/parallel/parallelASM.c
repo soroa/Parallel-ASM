@@ -10,19 +10,23 @@
 #include <string.h>
 // #include <omp.h>
 #include <limits.h>
+#include <math.h>
 
 
 #define MAX(x, y) (((x) > (y)) ? (x) : (y))
 #define MIN(x, y) (((x) < (y)) ? (x) : (y))
 
-int ** createEMatrix(unsigned int rows, unsigned int cols) {
-  int ** matrix;
-  matrix = (int **) calloc(cols, sizeof(int *));
-  for(unsigned int i = 0; i < cols; i++)
-    matrix[i] = (int *) calloc(rows, sizeof(int));
-  return matrix;
-}
 
+void printM(int** M,int m){
+
+   for(int i=0; i<3;i++){
+   for(int j=0; j<m+1; j++){
+    printf(" %d ",M[i][j]);
+
+    }
+    printf("\n");
+  }
+}
 
 
 int main (int argc, char *argv[]) 
@@ -33,32 +37,34 @@ int main (int argc, char *argv[])
   char* targetText; 
   int n=0;
   int m=0;
-  int** eMatrix; 
+  int** DMatrix; 
 
-   if ( argc != 3 ) /* argc should be 2 for correct execution */
-    {
-        /* We print argv[0] assuming it is the program name */
-        printf( "It looks like your parameters are wrong" );
-    }
-    else{
-        m = strlen(argv[1]);
-        n = strlen(argv[2]);;
-        pattern= argv[1];
-        targetText = argv[2];
-        printf("X is %s \n", pattern);
-        printf("Y is %s \n", targetText);
-    }
-  eMatrix =createEMatrix(3,m);
+  if ( argc != 3 ) /* argc should be 2 for correct execution */
+  {
   
-  for(int i=0; i<3;i++){
-    for(int j=0; j<m; j++){
-      printf("%d ",eMatrix[i][j]);
-
-    }
-    printf("\n");
+      printf( "It looks like your parameters are wrong" );
+  }
+  
+  else{
+      m = strlen(argv[1]);
+      n = strlen(argv[2]);;
+      pattern= argv[1];
+      targetText = argv[2];
   }
 
-  int minVal = INT_MAX; 
+  DMatrix = (int **) malloc(3*sizeof(int *));
+  printf("m is %d\n", m);
+  for( int i = 0; i < 3; i++){
+    
+    DMatrix[i] = (int *) malloc((m+1)*sizeof(int));
+  }
+
+ 
+  printM(DMatrix, m);
+
+
+
+  int minVal = m; 
 
   for(int k=0; k<=n+m-1; k++){
     printf("k : %d \n", k);
@@ -66,37 +72,39 @@ int main (int argc, char *argv[])
     for(int i=0; i<=m; i++){
 
       j = k-i+1; 
-      printf("i : %d \n", i);
+  
+      printf("i is %d and j is %d \n", i, j);
+      if(i==0){
+        DMatrix[j%3][i]=0; 
+        continue;
+      }
 
-      if(i==0) eMatrix[j%3][i]=0; 
-
-      else if(j=0) eMatrix[j%3][i] = i; 
+      else if(j=0) {
+        DMatrix[j%3][i] = i; 
+        continue;
+      }
+      
       else if(j>=1 && j<=n){
+        
         printf("assignment loop \n"); 
-        eMatrix[j%3][i] = MIN(eMatrix[(j-1)%3][i]+1, MIN(eMatrix[(j)%3][i-1]+1, eMatrix[(j-1)%3][i-1]+1)+ (pattern[i]==targetText[j]?1:0));
+        DMatrix[j%3][i] = MIN(DMatrix[(j-1)%3][i]+1, MIN(DMatrix[(j)%3][i-1]+1, DMatrix[(j-1)%3][i-1]+1)+ (pattern[i]==targetText[j]?1:0));
       }
 
-      eMatrix[j%3][i] = i; 
-
-       for(int i=0; i<3;i++){
-    for(int j=0; j<m; j++){
-      printf("%d ",eMatrix[i][j]);
-
+      if(i==m){
+      if(DMatrix[j%3][i]<minVal) minVal = DMatrix[j%3][m]; 
       }
-    printf("\n");
+
+
     }
-
     
-    if(eMatrix[j%3][m]<minVal) minVal = eMatrix[j%3][m]; 
-
 
     printf("\n");
-  }
+  
 
     printf("\n \n Min value is %d \n \n ", minVal); 
 
   }
-  free(eMatrix);
+  free(DMatrix);
 
 
 }
