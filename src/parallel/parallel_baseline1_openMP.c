@@ -14,14 +14,13 @@ int NUMBER_OF_THREADS = 4;
 
 void printD(int** D){
 
-		if (ID == 0) {
 			for (int j = 0; j <= m; j++) {
 				for (int i = 0; i <= n; i++) {
 					printf("%d", D[j][i]);
 				}
 				printf("\n");
 			}
-		}
+
 
 }
 
