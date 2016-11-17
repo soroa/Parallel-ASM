@@ -9,7 +9,7 @@
 int n, m, k;
 char *text, *pattern;
 int **D;
-int NUMBER_OF_THREADS = 4;
+static const int NUMBER_OF_THREADS = 4;
 
 
 void printD(int** D){
