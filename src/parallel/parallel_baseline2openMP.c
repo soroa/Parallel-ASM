@@ -5,6 +5,7 @@
 #include <math.h>
 #include <limits.h>
 #include <pthread.h>
+#include <omp.h>
 
 int n, m, k;
 char *text, *pattern;
@@ -70,7 +71,7 @@ int main(int argc, char *argv[])
                 set_C_table(-1, d, d - 1);
         }
 
-        
+
 
         //initializng two diagonals to -infinity and -1. One thread per row
         for (int d = -(k + 1) + ID; d <= -1; d = d + nthreads) {
