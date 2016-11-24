@@ -54,20 +54,17 @@ int main(int argc, char *argv[])
     for (int i = 0; i < k + 2; i++)
         C[i] = (int *)malloc((n - m + 2 * k + 3) * sizeof(int));
 
-    // for (int i = 0; i < k + 2; i++) {
-    //     for (int j = 0; j < n - m + 2 * k + 3; j++) {
-
-    //         C[i][j] = not_initialized;
-
-    //     }
-    // }
-
-
-
-
-
 
     printf("C allocated \n ");
+
+    // #pragma omp parallel for
+
+    // for (int i = 0; i < k + 2; i = i + 1)
+    //     for (int j = 0; j < n - m + 2 * k + 3; j++)
+    //         C[i][j] = not_initialized;
+
+    // #pragma omp barrier
+
 
 
     static const int NUMBER_OF_THREADS = 4;
@@ -81,18 +78,20 @@ int main(int argc, char *argv[])
         int not_initialized = -2;
 
 
-        /*
-        *   D MATRIX INITIALIZATION
-        */
 
-    
+        //**********************************************************
+        //************************  MATRIX INITIALIZATION  *********************
+        //**********************************************************
+
+
+
 
         for (int i = ID; i < k + 2; i = i + nthreads)
-           for (int j = 0; j < n-m+2*k+3; j++)
+            for (int j = 0; j < n - m + 2 * k + 3; j++)
                 C[i][j] = not_initialized;
 
 
-        #pragma omp barrier 
+        #pragma omp barrier
 
         int subportion  = (n - m + k + 2) / nthreads;
         int remainder = (n - m + k + 2) % nthreads;
@@ -103,7 +102,7 @@ int main(int argc, char *argv[])
             for (int d = ID * subportion + remainder; d < ID * subportion + subportion + remainder; d++)
                 set_C_table(-1, d, d - 1);
         }
-    
+
 
         for (int d = -(k + 1) + ID; d <= -1; d = d + nthreads) {
             set_C_table(-d - 1, d, -1);
@@ -112,12 +111,12 @@ int main(int argc, char *argv[])
 
 
         //**********************************************************
-        //************************  Computation  *********************
+        //************************  Computation: working in parallel  *********************
         //**********************************************************
 
 
 
-    
+
         #pragma omp barrier
 
 
