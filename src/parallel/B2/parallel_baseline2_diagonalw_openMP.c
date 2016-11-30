@@ -25,6 +25,17 @@ int get_C_table(int i, int j)
 }
 
 
+//D = b => all elements where d+e = b
+void setCDiagonalElem(int diag, int e, int value) {
+
+    C[e + 1][diag - e + k + 1] = value;
+
+}
+
+int getCDiagonalElem(int diag, int e) {
+    return C[e + 1][diag - e + k + 1];
+}
+
 
 
 void printC() {
@@ -115,22 +126,22 @@ int main(int argc, char *argv[])
         #pragma omp barrier
 
 
-        for (int e = ID; e <= k; e = e + nthreads)
-        {
-            for (int c = 0; c <= n - m + k; c++)
-            {
-                int d = c - e;
-                while (get_C_table(e - 1, d + 1) == not_initialized) {
-                    printf("%d waiting \n", ID);
+        for (int diag = ID; diag <=  n - m + k + 1; diag = diag + nthreads ) {
+            for (int e = 0; e <= k ; e++) {
+                int d = diag - e;
+                while (getCDiagonalElem(diag - 2, e - 1) == not_initialized || getCDiagonalElem(diag - 1, e - 1)==not_initialized) {
                     // printf("wait C[%d, %d]\n", e-1, d+1);
                 }
-                int col = fmax(fmax(get_C_table(e - 1, d - 1) + 1, get_C_table(e - 1, d) + 1), get_C_table(e - 1, d + 1));
+                int col = fmax(fmax( getCDiagonalElem(diag - 2, e - 1) + 1, getCDiagonalElem(diag - 1, e - 1) + 1), getCDiagonalElem(diag, e - 1));
                 while (col < n && col - d < m && text[col] == pattern[col - d]) {
                     col++;
                 }
-                set_C_table(e, d, fmin(fmin(col, m + d), n));
+                setCDiagonalElem(diag, e, fmin(fmin(col, m + d), n));
             }
         }
+        if (ID == 0)      printC();
+
+
 
 
         //**********************************************************

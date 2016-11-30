@@ -106,7 +106,7 @@ int main(int argc, char *argv[]) {
         /*
         *   D MATRIX COMPUTATION
         */
-
+        
 
 
         for (int d =  1+ID; d < n + m; d = d+nthreads) {
