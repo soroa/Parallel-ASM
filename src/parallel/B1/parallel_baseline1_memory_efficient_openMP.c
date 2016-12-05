@@ -19,6 +19,9 @@ static const int NUMBER_OF_THREADS = 4;
 int** DMatrix;
 int n, m, k;
 
+char* pattern;
+char* text;
+
 void printMatrix() {
   // printf("\n ");
   for (int j = 0; j <= 2; j++) {
@@ -32,6 +35,53 @@ void printMatrix() {
 
 }
 
+void readTextandPattern(char *argv[]) {
+  char *textFileName;
+  char *patternFileName;
+  textFileName = argv[1];
+  patternFileName = argv[2];
+  //reading from text file
+  FILE *f = fopen(textFileName, "r");
+  if (f == NULL)
+  {
+    perror("Error opening file");
+    return ;
+  }
+  fseek(f, 0, SEEK_END);
+  int SIZE = ftell(f);
+
+  fseek(f, 0, SEEK_SET);
+
+  char textBuf[SIZE + 1];
+  if (fgets( textBuf, SIZE + 1, f) != NULL) {
+    printf("text read correctly\n");
+    text = textBuf;
+  } else {
+    printf("returned null \n");
+  }
+  fclose(f);
+
+  f = fopen(patternFileName, "r");
+  if (f == NULL)
+  {
+    perror("Error opening file");
+    return;
+  }
+  fseek(f, 0, SEEK_END);
+  SIZE = ftell(f);
+  fseek(f, 0, SEEK_SET);
+  char patternBuf[SIZE + 1];
+  if (fgets( patternBuf, SIZE + 1, f) != NULL) {
+    printf("pattern read correctly\n");
+    pattern = patternBuf;
+  } else {
+    printf("returned null \n");
+  }
+
+  fclose(f);
+}
+
+
 
 int mod(int a, int b)
 {
@@ -44,10 +94,6 @@ int main (int argc, char *argv[])
 {
   int nthreads, tid;
 
-  char* pattern;
-  char* targetText;
-
-
 
   if ( argc != 4 ) /* argc should be 2 for correct execution */
   {
@@ -56,11 +102,9 @@ int main (int argc, char *argv[])
   }
 
   else {
-
-    pattern = argv[2];
-    targetText = argv[1];
+    readTextandPattern(argv);
     m = strlen(pattern);
-    n = strlen(targetText);
+    n = strlen(text);
     k = atoi(argv[3]);
   }
 
@@ -114,11 +158,11 @@ int main (int argc, char *argv[])
         else if ((j >= 1) && (j <= n)) {
 
 
-          DMatrix[j % 3][i] = MIN(DMatrix[mod((j - 1), 3)][i] + 1, MIN(DMatrix[mod((j), 3)][i - 1] + 1, DMatrix[mod((j - 1), 3)][i - 1] + (pattern[i - 1] == targetText[j - 1] ? 0 : 1)));
+          DMatrix[j % 3][i] = MIN(DMatrix[mod((j - 1), 3)][i] + 1, MIN(DMatrix[mod((j), 3)][i - 1] + 1, DMatrix[mod((j - 1), 3)][i - 1] + (pattern[i - 1] == text[j - 1] ? 0 : 1)));
           if (i == m) {
 
             // printf("last line at j: %d = %d  ", j, DMatrix[j % 3][i]);
-            if (DMatrix[j % 3][i] <= k) printf("%d ", j-1);
+            if (DMatrix[j % 3][i] <= k) printf("%d ", j - 1);
             // printf("\n");
           }
         }

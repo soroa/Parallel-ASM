@@ -34,6 +34,51 @@ void setDiagonalElem(int d, int i, int el) {
 int getDiagonalElem(int d, int i) {
     return D[i][d + 1 - i];
 }
+void readTextandPattern(char *argv[]) {
+    char *textFileName;
+    char *patternFileName;
+    textFileName = argv[1];
+    patternFileName = argv[2];
+    //reading from text file
+    FILE *f = fopen(textFileName, "r");
+    if (f == NULL)
+    {
+        perror("Error opening file");
+        return ;
+    }
+    fseek(f, 0, SEEK_END);
+    int SIZE = ftell(f);
+
+    fseek(f, 0, SEEK_SET);
+
+    char textBuf[SIZE + 1];
+    if (fgets( textBuf, SIZE + 1, f) != NULL) {
+        printf("text read correctly\n");
+        text = textBuf;
+    } else {
+        printf("returned null \n");
+    }
+    fclose(f);
+
+    f = fopen(patternFileName, "r");
+    if (f == NULL)
+    {
+        perror("Error opening file");
+        return;
+    }
+    fseek(f, 0, SEEK_END);
+    SIZE = ftell(f);
+    fseek(f, 0, SEEK_SET);
+    char patternBuf[SIZE + 1];
+    if (fgets( patternBuf, SIZE + 1, f) != NULL) {
+        printf("pattern read correctly\n");
+        pattern = patternBuf;
+    } else {
+        printf("returned null \n");
+    }
+
+    fclose(f);
+}
 
 
 
@@ -45,8 +90,7 @@ int main(int argc, char *argv[]) {
         return -1;
     }
     // printf( "%d" + argc);
-    text = argv[1];
-    pattern = argv[2];
+    readTextandPattern(argv);
     n = strlen(text);
     m = strlen(pattern);
     k = atoi(argv[3]);
@@ -84,9 +128,9 @@ int main(int argc, char *argv[]) {
     }
     printD();
 
-    for (int i = 0; i <= n; i = i +1) {
+    for (int i = 0; i <= n; i = i + 1) {
         if (D[m][i] <= k)
-            printf("k-match at i:%d \n", i-1);
+            printf("k-match at i:%d \n", i - 1);
     }
 
 

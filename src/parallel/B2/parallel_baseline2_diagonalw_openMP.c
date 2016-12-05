@@ -36,6 +36,52 @@ int getCDiagonalElem(int diag, int e) {
     return C[e + 1][diag - e + k + 1];
 }
 
+void readTextandPattern(char *argv[]) {
+    char *textFileName;
+    char *patternFileName;
+    textFileName = argv[1];
+    patternFileName = argv[2];
+    //reading from text file
+    FILE *f = fopen(textFileName, "r");
+    if (f == NULL)
+    {
+        perror("Error opening file");
+        return ;
+    }
+    fseek(f, 0, SEEK_END);
+    int SIZE = ftell(f);
+
+    fseek(f, 0, SEEK_SET);
+
+    char textBuf[SIZE + 1];
+    if (fgets( textBuf, SIZE + 1, f) != NULL) {
+        printf("text read correctly\n");
+        text = textBuf;
+    } else {
+        printf("returned null \n");
+    }
+    fclose(f);
+
+    f = fopen(patternFileName, "r");
+    if (f == NULL)
+    {
+        perror("Error opening file");
+        return;
+    }
+    fseek(f, 0, SEEK_END);
+    SIZE = ftell(f);
+    fseek(f, 0, SEEK_SET);
+    char patternBuf[SIZE + 1];
+    if (fgets( patternBuf, SIZE + 1, f) != NULL) {
+        printf("pattern read correctly\n");
+        pattern = patternBuf;
+    } else {
+        printf("returned null \n");
+    }
+
+    fclose(f);
+}
+
 
 
 void printC() {
@@ -57,8 +103,7 @@ int main(int argc, char *argv[])
         printf("\n usage: ./exec text pattern k \n \n ");
         return 0;
     }
-    text = argv[1];
-    pattern = argv[2];
+    readTextandPattern(argv);
     n = strlen(text);
     m = strlen(pattern);
     k = atoi(argv[3]);
@@ -129,7 +174,7 @@ int main(int argc, char *argv[])
         for (int diag = ID; diag <=  n - m + k + 1; diag = diag + nthreads ) {
             for (int e = 0; e <= k ; e++) {
                 int d = diag - e;
-                while (getCDiagonalElem(diag - 2, e - 1) == not_initialized || getCDiagonalElem(diag - 1, e - 1)==not_initialized) {
+                while (getCDiagonalElem(diag - 2, e - 1) == not_initialized || getCDiagonalElem(diag - 1, e - 1) == not_initialized) {
                     // printf("wait C[%d, %d]\n", e-1, d+1);
                 }
                 int col = fmax(fmax( getCDiagonalElem(diag - 2, e - 1) + 1, getCDiagonalElem(diag - 1, e - 1) + 1), getCDiagonalElem(diag, e - 1));

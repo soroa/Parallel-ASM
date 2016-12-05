@@ -9,9 +9,8 @@
 int n, m, k;
 char  *pattern;
 int **D;
-char *textFileName; 
-char *patternFileName; 
-// char *text, *pattern;
+
+char *text, *pattern;
 static const int NUMBER_OF_THREADS = 4;
 
 
@@ -27,57 +26,64 @@ void printD(int** D) {
 
 }
 
-int main(int argc, char *argv[]) {
-
-	if (argc != 4) {
-
-		printf("usage: ./exec text pattern k");
-		return -1;
-	}
-
+void readTextandPattern(char *argv[]){
+	char *textFileName; 
+	char *patternFileName; 
 	textFileName = argv[1];
 	patternFileName = argv[2];
-
+	//reading from text file 
 	FILE *f = fopen(textFileName, "r");
 	if (f == NULL)
 	{
 		perror("Error opening file");
-		return (-1);
+		return ;
 	}
 	fseek(f, 0, SEEK_END);
 	int SIZE = ftell(f);
 
 	fseek(f, 0, SEEK_SET);
 
-	char text[SIZE + 1];
-	if (fgets( text, SIZE + 1, f) != NULL) {
+	char textBuf[SIZE + 1];
+	if (fgets( textBuf, SIZE + 1, f) != NULL) {
 		printf("text read correctly\n");
+		text = textBuf; 
 	} else {
 		printf("returned null \n");
 	}
-
 	fclose(f);
 
 	f = fopen(patternFileName, "r");
 	if (f == NULL)
 	{
 		perror("Error opening file");
-		return (-1);
+		return;
 	}
 	fseek(f, 0, SEEK_END);
 	SIZE = ftell(f);
 	fseek(f, 0, SEEK_SET);
-	char pattern[SIZE + 1];
-	if (fgets( pattern, SIZE + 1, f) != NULL) {
+	char patternBuf[SIZE + 1];
+	if (fgets( patternBuf, SIZE + 1, f) != NULL) {
 		printf("pattern read correctly\n");
+		pattern = patternBuf;
 	} else {
 		printf("returned null \n");
 	}
 
 	fclose(f);
+}
 
-	// text = argv[1];
-	// pattern = "GGAGAAATATACAGAATATGTAAATCCGTGGAGAAAGAAAGCCGATTTC";
+
+int main(int argc, char *argv[]) {
+
+	if (argc != 4) {
+
+		printf("usage: ./exec text_path pattern_path k");
+		return -1;
+	}
+
+
+	readTextandPattern(argv); 
+
 	n = strlen(text);
 	m = strlen(pattern);
 	k = atoi(argv[3]);
