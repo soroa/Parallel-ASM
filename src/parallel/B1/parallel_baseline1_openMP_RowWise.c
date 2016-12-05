@@ -7,34 +7,77 @@
 #include <math.h>
 
 int n, m, k;
-char *text, *pattern;
+char  *pattern;
 int **D;
+char *textFileName; 
+char *patternFileName; 
+// char *text, *pattern;
 static const int NUMBER_OF_THREADS = 4;
 
 
-void printD(int** D){
+void printD(int** D) {
 
-			for (int j = 0; j <= m; j++) {
-				for (int i = 0; i <= n; i++) {
-					printf("%d", D[j][i]);
-				}
-				printf("\n");
-			}
+	for (int j = 0; j <= m; j++) {
+		for (int i = 0; i <= n; i++) {
+			printf("%d", D[j][i]);
+		}
+		printf("\n");
+	}
 
 
 }
 
 int main(int argc, char *argv[]) {
 
-	printf("entered\n");
 	if (argc != 4) {
 
 		printf("usage: ./exec text pattern k");
 		return -1;
 	}
-	printf(	"%d" + argc);
-	text = argv[1];
-	pattern = argv[2];
+
+	textFileName = argv[1];
+	patternFileName = argv[2];
+
+	FILE *f = fopen(textFileName, "r");
+	if (f == NULL)
+	{
+		perror("Error opening file");
+		return (-1);
+	}
+	fseek(f, 0, SEEK_END);
+	int SIZE = ftell(f);
+
+	fseek(f, 0, SEEK_SET);
+
+	char text[SIZE + 1];
+	if (fgets( text, SIZE + 1, f) != NULL) {
+		printf("text read correctly\n");
+	} else {
+		printf("returned null \n");
+	}
+
+	fclose(f);
+
+	f = fopen(patternFileName, "r");
+	if (f == NULL)
+	{
+		perror("Error opening file");
+		return (-1);
+	}
+	fseek(f, 0, SEEK_END);
+	SIZE = ftell(f);
+	fseek(f, 0, SEEK_SET);
+	char pattern[SIZE + 1];
+	if (fgets( pattern, SIZE + 1, f) != NULL) {
+		printf("pattern read correctly\n");
+	} else {
+		printf("returned null \n");
+	}
+
+	fclose(f);
+
+	// text = argv[1];
+	// pattern = "GGAGAAATATACAGAATATGTAAATCCGTGGAGAAAGAAAGCCGATTTC";
 	n = strlen(text);
 	m = strlen(pattern);
 	k = atoi(argv[3]);
@@ -70,7 +113,6 @@ int main(int argc, char *argv[]) {
 		}
 
 		if (ID == 1) {
-			printf("initializing first colum\n");
 			for (int i = 1 ; i <= m; i = i + 1)
 				D[i][0] = i;
 		}
@@ -95,7 +137,6 @@ int main(int argc, char *argv[]) {
 
 
 		}
-		if (ID == 0) printf("D matrix computed");
 		// //threads must sync here
 		#pragma omp barrier
 
@@ -113,15 +154,15 @@ int main(int argc, char *argv[]) {
 		/*
 		*	Free all row except last one - no synch necessary because only row=m is being used
 		*/
-		for(int i=ID; i<m; i=i+nthreads){
+		for (int i = ID; i < m; i = i + nthreads) {
 			free(D[i]);
 		}
 
 
 	}
-		
-		free(D[m]);
-		free(D);
+
+	free(D[m]);
+	free(D);
 
 
 

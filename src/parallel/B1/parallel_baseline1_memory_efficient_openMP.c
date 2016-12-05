@@ -72,10 +72,6 @@ int main (int argc, char *argv[])
   }
 
 
-  // printM(DMatrix, m);
-
-
-
 
   int j = 0;
   DMatrix[0][0] = 0;
