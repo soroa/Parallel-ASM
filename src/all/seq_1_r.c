@@ -85,7 +85,7 @@ int main(int argc, char *argv[])
         }
     }
     for (int i = 1; i <= n; i++)
-        if (D[m][i] <= k)
+        // if (D[m][i] <= k)
             // printf("%d ", i);
 	t2=rdtsc();
 	printf("%llu \n", t2-t1);	

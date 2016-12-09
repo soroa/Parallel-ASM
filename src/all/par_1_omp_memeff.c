@@ -164,7 +164,7 @@ int main(int argc, char *argv[]) {
           if (i == m) {
 
             // printf("last line at j: %d = %d  ", j, DMatrix[j % 3][i]);
-            if (DMatrix[j % 3][i] <= k) printf("%d ", j - 1);
+            // if (DMatrix[j % 3][i] <= k) printf("%d ", j - 1);
             // printf("\n");
           }
         }

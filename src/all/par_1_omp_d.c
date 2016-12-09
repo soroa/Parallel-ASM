@@ -177,7 +177,7 @@ int main(int argc, char *argv[]) {
         // *    Last Row Iteration and Result Output
 
         for (int i = ID; i <= n; i = i + nthreads) {
-            if (D[m][i] <= k)
+            // if (D[m][i] <= k)
                // printf("k-match at i:%d \n", i-1);
         }
 

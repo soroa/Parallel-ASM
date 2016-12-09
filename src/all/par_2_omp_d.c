@@ -200,7 +200,7 @@ int main(int argc, char *argv[])
 
 
         for (int d = -k + ID ; d <= n - m; d = d + nthreads)
-            if (get_C_table(k, d) == d + m && d + m > 0)
+            // if (get_C_table(k, d) == d + m && d + m > 0)
                 // printf("%d  ", d + m);
 
 

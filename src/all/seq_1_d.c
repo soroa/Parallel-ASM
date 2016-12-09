@@ -132,7 +132,7 @@ int main(int argc, char *argv[]) {
     // printD();
 
     for (int i = 0; i <= n; i = i + 1) {
-        if (D[m][i] <= k)
+        // if (D[m][i] <= k)
             // printf("k-match at i:%d \n", i - 1);
     }
 

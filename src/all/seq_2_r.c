@@ -109,7 +109,7 @@ int main(int argc, char *argv[])
     // }
 
     for (int d = -k; d <= n - m; d++)
-        if (get_C_table(k, d) == d + m && d + m > 0)
+        // if (get_C_table(k, d) == d + m && d + m > 0)
             // printf("%d ", d + m);
 
     for (int i = 0; i < k + 2; i++)

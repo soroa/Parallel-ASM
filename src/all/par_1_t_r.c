@@ -71,8 +71,8 @@ void *thread_routine(void *arg)
 
     if (i == m) {
         for (int j = 1; j <= n; j++)
-            if (D[m][j] <= k) 
-                printf("%d ", j);
+            // if (D[m][j] <= k) 
+            //     printf("%d ", j);
 
         for (int i = 0; i < m+1; i++)
             free(D[i]);
