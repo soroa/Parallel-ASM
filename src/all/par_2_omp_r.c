@@ -137,14 +137,6 @@ int main(int argc, char *argv[])
     //**********************************************************
 
 
-
-
-
-  
-
-
-    #pragma omp barrier
-
     int subportion  = (n - m + k + 2) / nthreads;
     int remainder = (n - m + k + 2) % nthreads;
 

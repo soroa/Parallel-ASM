@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
+#include "rdtsc.h"
 #include <limits.h>
 #include <pthread.h>
 #include <omp.h>
@@ -59,10 +60,10 @@ void readTextandPattern(char *argv[]) {
 
   char textBuf[SIZE + 1];
   if (fgets( textBuf, SIZE + 1, f) != NULL) {
-    printf("text read correctly\n");
+    // printf("text read correctly\n");
     text = textBuf;
   } else {
-    printf("returned null \n");
+    // printf("returned null \n");
   }
   fclose(f);
 
@@ -77,7 +78,7 @@ void readTextandPattern(char *argv[]) {
   fseek(f, 0, SEEK_SET);
   char patternBuf[SIZE + 1];
   if (fgets( patternBuf, SIZE + 1, f) != NULL) {
-    printf("pattern read correctly\n");
+    // printf("pattern read correctly\n");
     pattern = patternBuf;
   } else {
     printf("returned null \n");
@@ -89,6 +90,9 @@ void readTextandPattern(char *argv[]) {
 
 int main(int argc, char *argv[])
 {
+
+    unsigned long long t1, t2;
+  t1 = rdtsc();
     if (argc != 4) {
         printf("\n usage: ./exec text pattern k \n \n ");
         return 0;
@@ -104,7 +108,7 @@ int main(int argc, char *argv[])
         C[i] = (int *)malloc((n - m + 2 * k + 3) * sizeof(int));
 
 
-    printf("C allocated \n ");
+    // printf("C allocated \n ");
 
 
 
@@ -167,7 +171,7 @@ int main(int argc, char *argv[])
             {
                 int d = c - e;
                 while (get_C_table(e - 1, d + 1) == not_initialized) {
-                    printf("%d waiting \n", ID);
+                    // printf("%d waiting \n", ID);
                     // printf("wait C[%d, %d]\n", e-1, d+1);
                 }
                 int col = fmax(fmax(get_C_table(e - 1, d - 1) + 1, get_C_table(e - 1, d) + 1), get_C_table(e - 1, d + 1));
@@ -188,9 +192,9 @@ int main(int argc, char *argv[])
         //Matrix computed. Going through last line
 
 
-        for (int d = -k + ID ; d <= n - m; d = d + nthreads)
-            if (get_C_table(k, d) == d + m && d + m > 0)
-                printf("%d  ", d + m);
+        // for (int d = -k + ID ; d <= n - m; d = d + nthreads)
+        //     if (get_C_table(k, d) == d + m && d + m > 0)
+        //         printf("%d  ", d + m);
 
 
 
@@ -207,7 +211,8 @@ int main(int argc, char *argv[])
 
     free(C);
 
-
+  t2 = rdtsc();
+  printf("%llu \n", t2 - t1);
 
 
 }
