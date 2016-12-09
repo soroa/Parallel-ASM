@@ -7,10 +7,13 @@
 #include <string.h>
 #include <math.h>
 
+
 int n, m, k;
 char *text, *pattern;
 int **D;
-static const int NUMBER_OF_THREADS = 4;
+short *initializedLines; 
+
+static const int NUMBER_OF_THREADS = 8;
 
 
 void printD() {
@@ -112,6 +115,7 @@ int main(int argc, char *argv[]) {
         D[i] = (int *)malloc((n + 1) * sizeof(int));
     }
 
+    initializedLines = (short *) calloc((m+1),sizeof(short)); 
 
 
     /*
@@ -133,6 +137,8 @@ int main(int argc, char *argv[]) {
         if (ID == 0) {
             for (int i = 0; i <= n; i = i + 1)
                 D[0][i] = 0;
+            initializedLines[0]=1; 
+
         }
 
         if (ID == 1) {
@@ -141,34 +147,42 @@ int main(int argc, char *argv[]) {
                 D[i][0] = i;
         }
 
-        for (int i = 1 + ID; i <= m; i = i + nthreads)
+        if(ID>=nthreads/2){
+          printf("started initializng \n"); 
+        for (int i = 1 + ID - nthreads/2; i <= m; i = i + nthreads/2)
             for (int j = 1; j <= n; j = j + 1) {
-
                 D[i][j] = -1;
+                initializedLines[i]=1;
+                if(j==n){
+                    printf("T %d initialized row %d \n",ID, i); 
+                }
             }
-
+        }
 
 
         //threads must sync here
-        #pragma omp barrier
+        // #pragma omp barrier
 
         /*
         *   D MATRIX COMPUTATION
         */
         
 
-
-        for (int d =  1+ID; d < n + m; d = d+nthreads) {
+        if(ID<nthreads/2){
+        for (int d =  1+ID; d < n + m; d = d+nthreads/2) {
             int i = 1;
+            while(initializedLines[i]==0){
+              printf("waiting for line %d \n ", i); 
+              // printf("i = %d", i); 
+            }
             while (i <= m && (d - i + 1) >= 1 ) {
                 while (getDiagonalElem(d - 1, i)  == -1) {}
                 int a = fmin(fmin(getDiagonalElem(d - 1, i - 1) + 1, getDiagonalElem(d - 1, i) + 1), getDiagonalElem(d - 2, i - 1) + (pattern[i - 1] == text[d - i] ? 0 : 1));
                 setDiagonalElem(d, i, a);
                 i++;
             }
-
         }
-
+      }
 
 
         // //threads must sync here

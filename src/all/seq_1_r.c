@@ -8,6 +8,10 @@
 char *text;
 char *pattern;
 
+int **D;
+
+
+
 void readTextandPattern(char *argv[]) {
     char *textFileName;
     char *patternFileName;
@@ -68,7 +72,12 @@ int main(int argc, char *argv[])
     int n = strlen(text), m = strlen(pattern);
     int k = atoi(argv[3]);
 
-    int D[m + 1][n + 1];
+    
+    D = (int **)malloc((m + 1) * sizeof(int *));
+    for (int i = 0; i < m + 1; i = i + 1) {
+        D[i] = (int *)malloc((n + 1) * sizeof(int));
+    }
+
     for (int i = 0; i <= n; i++)
         D[0][i] = 0;
     for (int i = 1; i <= m; i++)
@@ -84,9 +93,21 @@ int main(int argc, char *argv[])
                 D[i][j] = fmin(fmin(D[i - 1][j] + 1, D[i][j - 1] + 1), D[i - 1][j - 1] + 1);
         }
     }
-    for (int i = 1; i <= n; i++)
+    for (int i = 1; i <= n; i++){
         // if (D[m][i] <= k)
             // printf("%d ", i);
-	t2=rdtsc();
+    }
+    
+
+	for (int i = 0; i < m+1; i = i + 1) {
+            free(D[i]);
+       }	
+    
+    free(D);
+
+    t2=rdtsc();
+
 	printf("%llu \n", t2-t1);	
+
+
 }
