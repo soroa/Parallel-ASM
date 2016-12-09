@@ -1,5 +1,6 @@
 // Dynamic Programming - C table : k+1 threads, O(n) in theory
 #include <stdio.h>
+#include "rdtsc.h"
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
@@ -25,63 +26,6 @@ int get_C_table(int i, int j)
 }
 
 
-//D = b => all elements where d+e = b
-void setCDiagonalElem(int diag, int e, int value) {
-
-    C[e + 1][diag - e + k + 1] = value;
-
-}
-
-int getCDiagonalElem(int diag, int e) {
-    return C[e + 1][diag - e + k + 1];
-}
-
-void readTextandPattern(char *argv[]) {
-    char *textFileName;
-    char *patternFileName;
-    textFileName = argv[1];
-    patternFileName = argv[2];
-    //reading from text file
-    FILE *f = fopen(textFileName, "r");
-    if (f == NULL)
-    {
-        perror("Error opening file");
-        return ;
-    }
-    fseek(f, 0, SEEK_END);
-    int SIZE = ftell(f);
-
-    fseek(f, 0, SEEK_SET);
-
-    char textBuf[SIZE + 1];
-    if (fgets( textBuf, SIZE + 1, f) != NULL) {
-        printf("text read correctly\n");
-        text = textBuf;
-    } else {
-        printf("returned null \n");
-    }
-    fclose(f);
-
-    f = fopen(patternFileName, "r");
-    if (f == NULL)
-    {
-        perror("Error opening file");
-        return;
-    }
-    fseek(f, 0, SEEK_END);
-    SIZE = ftell(f);
-    fseek(f, 0, SEEK_SET);
-    char patternBuf[SIZE + 1];
-    if (fgets( patternBuf, SIZE + 1, f) != NULL) {
-        printf("pattern read correctly\n");
-        pattern = patternBuf;
-    } else {
-        printf("returned null \n");
-    }
-
-    fclose(f);
-}
-
 
 
 void printC() {
@@ -97,13 +41,62 @@ void printC() {
 
 }
 
+void readTextandPattern(char *argv[]) {
+  char *textFileName;
+  char *patternFileName;
+  textFileName = argv[1];
+  patternFileName = argv[2];
+  //reading from text file
+  FILE *f = fopen(textFileName, "r");
+  if (f == NULL)
+  {
+    perror("Error opening file");
+    return ;
+  }
+  fseek(f, 0, SEEK_END);
+  int SIZE = ftell(f);
+
+  fseek(f, 0, SEEK_SET);
+
+  char textBuf[SIZE + 1];
+  if (fgets( textBuf, SIZE + 1, f) != NULL) {
+    // printf("text read correctly\n");
+    text = textBuf;
+  } else {
+    // printf("returned null \n");
+  }
+  fclose(f);
+
+  f = fopen(patternFileName, "r");
+  if (f == NULL)
+  {
+    perror("Error opening file");
+    return;
+  }
+  fseek(f, 0, SEEK_END);
+  SIZE = ftell(f);
+  fseek(f, 0, SEEK_SET);
+  char patternBuf[SIZE + 1];
+  if (fgets( patternBuf, SIZE + 1, f) != NULL) {
+    // printf("pattern read correctly\n");
+    pattern = patternBuf;
+  } else {
+    // printf("returned null \n");
+  }
+
+  fclose(f);
+}
+
+
 int main(int argc, char *argv[])
 {
+	unsigned long long t1, t2;
+	t1=rdtsc();
     if (argc != 4) {
         printf("\n usage: ./exec text pattern k \n \n ");
         return 0;
     }
-    readTextandPattern(argv);
+   readTextandPattern(argv);
     n = strlen(text);
     m = strlen(pattern);
     k = atoi(argv[3]);
@@ -114,7 +107,7 @@ int main(int argc, char *argv[])
         C[i] = (int *)malloc((n - m + 2 * k + 3) * sizeof(int));
 
 
-    printf("C allocated \n ");
+    // printf("C allocated \n ");
 
 
 
@@ -171,22 +164,22 @@ int main(int argc, char *argv[])
         #pragma omp barrier
 
 
-        for (int diag = ID; diag <=  n - m + k + 1; diag = diag + nthreads ) {
-            for (int e = 0; e <= k ; e++) {
-                int d = diag - e;
-                while (getCDiagonalElem(diag - 2, e - 1) == not_initialized || getCDiagonalElem(diag - 1, e - 1) == not_initialized) {
+        for (int e = ID; e <= k; e = e + nthreads)
+        {
+            for (int c = 0; c <= n - m + k; c++)
+            {
+                int d = c - e;
+                while (get_C_table(e - 1, d + 1) == not_initialized) {
+                    // printf("%d waiting \n", ID);
                     // printf("wait C[%d, %d]\n", e-1, d+1);
                 }
-                int col = fmax(fmax( getCDiagonalElem(diag - 2, e - 1) + 1, getCDiagonalElem(diag - 1, e - 1) + 1), getCDiagonalElem(diag, e - 1));
+                int col = fmax(fmax(get_C_table(e - 1, d - 1) + 1, get_C_table(e - 1, d) + 1), get_C_table(e - 1, d + 1));
                 while (col < n && col - d < m && text[col] == pattern[col - d]) {
                     col++;
                 }
-                setCDiagonalElem(diag, e, fmin(fmin(col, m + d), n));
+                set_C_table(e, d, fmin(fmin(col, m + d), n));
             }
         }
-        // if (ID == 0)      printC();
-
-
 
 
         //**********************************************************
@@ -200,7 +193,7 @@ int main(int argc, char *argv[])
 
         for (int d = -k + ID ; d <= n - m; d = d + nthreads)
             if (get_C_table(k, d) == d + m && d + m > 0)
-                printf("%d  ", d + m);
+                // printf("%d  ", d + m);
 
 
 
@@ -217,7 +210,8 @@ int main(int argc, char *argv[])
 
     free(C);
 
-
+    t2=rdtsc();
+	printf("%llu \n", t2-t1);
 
 
 }
