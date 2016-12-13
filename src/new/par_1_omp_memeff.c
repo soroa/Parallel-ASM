@@ -16,7 +16,7 @@
 
 #define MAX(x, y) (((x) > (y)) ? (x) : (y))
 #define MIN(x, y) (((x) < (y)) ? (x) : (y))
-static const int NUMBER_OF_THREADS = 4;
+int NUMBER_OF_THREADS;
 int** DMatrix;
 int n, m, k;
 
@@ -36,53 +36,42 @@ void printMatrix() {
 
 }
 
-void readTextandPattern(char *argv[]) {
-  char *textFileName;
-  char *patternFileName;
-  textFileName = argv[1];
-  patternFileName = argv[2];
-  //reading from text file
-  FILE *f = fopen(textFileName, "r");
-  if (f == NULL)
-  {
-    perror("Error opening file");
-    return ;
-  }
-  fseek(f, 0, SEEK_END);
-  int SIZE = ftell(f);
-
-  fseek(f, 0, SEEK_SET);
-
-  char textBuf[SIZE + 1];
-  if (fgets( textBuf, SIZE + 1, f) != NULL) {
-    // printf("text read correctly\n");
-    text = textBuf;
-  } else {
-    // printf("returned null \n");
-  }
-  fclose(f);
-
-  f = fopen(patternFileName, "r");
+void readTextandPattern(char *argv[], int *p_n, int *p_m)
+{
+  // Read text file
+  FILE *f = fopen(argv[1], "r");
   if (f == NULL)
   {
     perror("Error opening file");
     return;
   }
   fseek(f, 0, SEEK_END);
-  SIZE = ftell(f);
+  *p_n = ftell(f);
   fseek(f, 0, SEEK_SET);
-  char patternBuf[SIZE + 1];
-  if (fgets( patternBuf, SIZE + 1, f) != NULL) {
-    // printf("pattern read correctly\n");
-    pattern = patternBuf;
-  } else {
-    // printf("returned null \n");
+  text = (char *)malloc((*p_n + 1) * sizeof(char));
+  if (fgets(text, *p_n + 1, f) == NULL) {
+    perror("Error reading file");
+    return;
   }
+  fclose(f);
 
+  // Read pattern file
+  f = fopen(argv[2], "r");
+  if (f == NULL)
+  {
+    perror("Error opening file");
+    return;
+  }
+  fseek(f, 0, SEEK_END);
+  *p_m = ftell(f);
+  fseek(f, 0, SEEK_SET);
+  pattern = (char *)malloc((*p_m + 1) * sizeof(char));
+  if (fgets(pattern, *p_m + 1, f) == NULL) {
+    perror("Error reading file");
+    return;
+  }
   fclose(f);
 }
-
-
 
 int mod(int a, int b)
 {
@@ -97,17 +86,17 @@ int main(int argc, char *argv[]) {
   int nthreads, tid;
 
 
-  if ( argc != 4 ) /* argc should be 2 for correct execution */
+  if ( argc != 5 ) /* argc should be 2 for correct execution */
   {
 
     printf( "It looks like your parameters are wrong" );
   }
 
   else {
-    readTextandPattern(argv);
-    m = strlen(pattern);
-    n = strlen(text);
-    k = atoi(argv[3]);
+  readTextandPattern(argv, &n, &m);
+  k = atoi(argv[3]);
+  NUMBER_OF_THREADS = atoi(argv[4]); 
+
   }
 
   DMatrix = (int **) malloc(3 * sizeof(int *));

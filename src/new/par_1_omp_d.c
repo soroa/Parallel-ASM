@@ -13,8 +13,7 @@ int** D;
 
 #define MAX(x, y) (((x) > (y)) ? (x) : (y))
 #define MIN(x, y) (((x) < (y)) ? (x) : (y))
-
-static const int NUMBER_OF_THREADS = 4;
+int NUMBER_OF_THREADS;
 
 void printD()
 {
@@ -77,14 +76,15 @@ int main(int argc, char* argv[])
   unsigned long long t1, t2;
   t1 = rdtsc();
 
-  if (argc != 4) {
+  if (argc != 5) {
 
-    printf("usage: ./exec text pattern k");
+    printf("usage: ./exec text pattern k n_cores");
     return -1;
   }
   // printf( "%d" + argc);
   readTextandPattern(argv, &n, &m);
   k = atoi(argv[3]);
+  NUMBER_OF_THREADS = atoi(argv[4]);
 
   /*
   *   ALLOCATING MEMORY FOR D, (N+1xM+1)

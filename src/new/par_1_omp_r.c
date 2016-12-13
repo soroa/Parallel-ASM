@@ -12,7 +12,7 @@ char  *pattern;
 int **D;
 
 char *text, *pattern;
-static const int NUMBER_OF_THREADS = 8;
+int NUMBER_OF_THREADS ;
 #define MAX(x, y) (((x) > (y)) ? (x) : (y))
 #define MIN(x, y) (((x) < (y)) ? (x) : (y))
 
@@ -71,9 +71,9 @@ int main(int argc, char *argv[]) {
 
 
 
-	if (argc != 4) {
+	if (argc != 5) {
 
-		printf("usage: ./exec text_path pattern_path k");
+		printf("usage: ./exec text_path pattern_path k n_threads");
 		return -1;
 	}
 
@@ -82,6 +82,7 @@ int main(int argc, char *argv[]) {
 	readTextandPattern(argv, &n, &m);
 
 	k = atoi(argv[3]);
+	NUMBER_OF_THREADS = atoi(argv[4]); 
 
 
 	/*

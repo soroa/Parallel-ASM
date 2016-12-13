@@ -10,7 +10,7 @@
 int n, m, k;
 char *text, *pattern;
 int **C;
-static const int NUMBER_OF_THREADS = 4;
+int NUMBER_OF_THREADS;
 
 
 void set_C_table(int i, int j, int value)
@@ -90,14 +90,14 @@ void printC() {
 
 int main(int argc, char *argv[])
 {
-    if (argc != 4) {
-        printf("\n usage: ./exec text pattern k \n \n ");
+    if (argc != 5) {
+        printf("\n usage: ./exec text pattern k n_threads \n \n ");
         return 0;
     }
     readTextandPattern(argv, &n, &m);
-    n = strlen(text);
-    m = strlen(pattern);
     k = atoi(argv[3]);
+    NUMBER_OF_THREADS = atoi(argv[4]);
+
     int not_initialized = -2;
 
     C = (int **)malloc((k + 2) * sizeof(int *));
