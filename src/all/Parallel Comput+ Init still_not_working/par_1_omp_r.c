@@ -10,13 +10,12 @@
 int n, m, k;
 char  *pattern;
 int **D;
-short *initializedLines;
 
 char *text, *pattern;
 static const int NUMBER_OF_THREADS = 8;
 
 
-void printD(int** D) {
+void printD() {
 
 	for (int j = 0; j <= m; j++) {
 		for (int i = 0; i <= n; i++) {
@@ -28,52 +27,42 @@ void printD(int** D) {
 
 }
 
-void readTextandPattern(char *argv[]) {
-	char *textFileName;
-	char *patternFileName;
-	textFileName = argv[1];
-	patternFileName = argv[2];
-	//reading from text file
-	FILE *f = fopen(textFileName, "r");
-	if (f == NULL)
-	{
-		perror("Error opening file");
-		return ;
-	}
-	fseek(f, 0, SEEK_END);
-	int SIZE = ftell(f);
-
-	fseek(f, 0, SEEK_SET);
-
-	char textBuf[SIZE + 1];
-	if (fgets( textBuf, SIZE + 1, f) != NULL) {
-		// printf("text read correctly\n");
-		text = textBuf;
-	} else {
-		// printf("returned null \n");
-	}
-	fclose(f);
-
-	f = fopen(patternFileName, "r");
+void readTextandPattern(char *argv[], int *p_n, int *p_m)
+{
+	// Read text file
+	FILE *f = fopen(argv[1], "r");
 	if (f == NULL)
 	{
 		perror("Error opening file");
 		return;
 	}
 	fseek(f, 0, SEEK_END);
-	SIZE = ftell(f);
+	*p_n = ftell(f);
 	fseek(f, 0, SEEK_SET);
-	char patternBuf[SIZE + 1];
-	if (fgets( patternBuf, SIZE + 1, f) != NULL) {
-		// printf("pattern read correctly\n");
-		pattern = patternBuf;
-	} else {
-		// printf("returned null \n");
+	text = (char *)malloc((*p_n + 1) * sizeof(char));
+	if (fgets(text, *p_n + 1, f) == NULL) {
+		perror("Error reading file");
+		return;
 	}
+	fclose(f);
 
+	// Read pattern file
+	f = fopen(argv[2], "r");
+	if (f == NULL)
+	{
+		perror("Error opening file");
+		return;
+	}
+	fseek(f, 0, SEEK_END);
+	*p_m = ftell(f);
+	fseek(f, 0, SEEK_SET);
+	pattern = (char *)malloc((*p_m + 1) * sizeof(char));
+	if (fgets(pattern, *p_m + 1, f) == NULL) {
+		perror("Error reading file");
+		return;
+	}
 	fclose(f);
 }
-
 
 int main(int argc, char *argv[]) {
 	unsigned long long t1, t2;
@@ -87,10 +76,9 @@ int main(int argc, char *argv[]) {
 	}
 
 
-	readTextandPattern(argv);
 
-	n = strlen(text);
-	m = strlen(pattern);
+	readTextandPattern(argv, &n, &m);
+
 	k = atoi(argv[3]);
 
 
@@ -104,7 +92,6 @@ int main(int argc, char *argv[]) {
 		D[i] = (int *)malloc((n + 1) * sizeof(int));
 	}
 
-	initializedLines = (short *) calloc((m + 1), sizeof(short));
 
 
 	/*
@@ -127,7 +114,6 @@ int main(int argc, char *argv[]) {
 		if (ID == 0) {
 			for (int i = 0; i <= n; i = i + 1)
 				D[0][i] = 0;
-			initializedLines[0] = 1;
 
 		}
 
@@ -137,47 +123,56 @@ int main(int argc, char *argv[]) {
 				D[i][0] = i;
 		}
 
-		if (ID >= nthreads / 2) {
-			for (int i = 1 + ID - nthreads / 2; i <= m; i = i + nthreads / 2) {
-				for (int j = 1; j <= n; j = j + 1) {
-					D[i][j] = -1;
 
-				}
-				initializedLines[i] = 1;
+		for (int i = 1 + ID ; i <= m; i = i + nthreads) {
+			for (int j = 1; j <= n; j = j + 1) {
+				D[i][j] = -1;
+
 			}
 		}
+
 		//threads must sync here
 
 		/*
 		*	D MATRIX COMPUTATION
 		*/
-		if (ID < nthreads / 2) {
-
-			for (int i = ID + 1; i <= m; i = i + nthreads / 2 ) {
-				while (initializedLines[i] == 0) {
-				}
-				for (int j = 1; j <= n; j++) {
-					while (D[i - 1][j] == -1) {}
-					D[i][j] = fmin(fmin(D[i - 1][j] + 1, D[i][j - 1] + 1), D[i - 1][j - 1] + (pattern[i - 1] == text[j - 1] ? 0 : 1));
-				}
-
-
-			}
-		}
-		// //threads must sync here
 		#pragma omp barrier
 
 
+		for (int i = ID + 1; i <= m; i = i + nthreads ) {
 
-		// *	Last Row Iteration and Result Output
+			for (int j = 1; j <= n; j++) {
+				while (D[i - 1][j] == -1) {}
+				D[i][j] = fmin(fmin(D[i - 1][j] + 1, D[i][j - 1] + 1), D[i - 1][j - 1] + (pattern[i - 1] == text[j - 1] ? 0 : 1));
+			}
 
-		for (int i = ID; i <= n; i = i + nthreads) {
-			// if (D[m][i] <= k)
-			// printf("k-match at i:%d \n", i)
+
 		}
 
+		// //threads must sync here
+		#pragma omp barrier
 
+		// if(ID==0) printD();
+		// #pragma omp barrier
 
+		// // *	Last Row Iteration and Result Output
+
+		// for (int i = ID; i <= n; i = i + nthreads) {
+		// 	if (D[m][i] <= k)
+		// 	printf("k-match at i:%d \n", i);
+		// }
+
+		// if (ID == 0) {
+		// 	printD();
+		// }
+
+		// #pragma omp barrier
+		// for (int i = ID; i <= n; i = i + nthreads) {
+		// 	if (D[m][i]  <= k)
+		// 		printf("k-match at i:%d \n", i - 1);
+		// }
+
+		// #pragma omp barrier
 		/*
 		*	Free all row except last one - no synch necessary because only row=m is being used
 		*/

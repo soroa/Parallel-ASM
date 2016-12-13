@@ -92,7 +92,7 @@ int main(int argc, char* argv[])
 
   D = (int**)malloc((m + 1) * sizeof(int*));
   for (int i = 0; i < m + 1; i = i + 1) {
-    D[i] = (int*)malloc((n + 1) * sizeof(int));
+    D[i] = (int*)calloc((n + 1), sizeof(int));
   }
 
   /*
@@ -111,24 +111,24 @@ int main(int argc, char* argv[])
     *   D MATRIX INITIALIZATION
     */
 
+
+    int subportion  = (n + 1) / nthreads;
+    int remainder = (n + 1) % nthreads;
     if (ID == 0) {
-      for (int i = 0; i <= n; i = i + 1)
-        D[0][i] = 0;
+      for (int i = 0; i < subportion + remainder; i++)
+        D[0][i] = 1;
+    } else {
+      for (int i = ID * subportion + remainder; i < ID * subportion + subportion + remainder; i++)
+        D[0][i] = 1;
     }
 
-    if (ID == 1) {
-      // printf("initializing first colum\n");
-      for (int i = 1; i <= m; i = i + 1)
-        D[i][0] = i;
-    }
 
-    for (int sum = 2; sum <= n + m; sum = sum + 1) {
+    // printf("initializing first colum\n");
+    for (int i = 1 + ID; i <= m; i = i + nthreads)
+      D[i][0] = i + 1;
 
-      for (int i = MAX(1, sum - n) + ID; i <= MIN(sum - 1, m); i = i + nthreads) {
-        int j = sum - i;
-        D[i][j] = -1;
-      }
-    }
+
+
 
     #pragma omp barrier
 
@@ -137,7 +137,7 @@ int main(int argc, char* argv[])
       for (int i = MAX(1, sum - n) + ID; i <= MIN(sum - 1, m); i = i + nthreads) {
         int j = sum - i;
 
-        while (D[i - 1][j] == -1 || D[i][j - 1] == -1) {
+        while (D[i - 1][j] == 0 || D[i][j - 1] == 0) {
           // printf("line %d \n ", i);
           // printf("T%d D[%d][%d] = -1 \n", ID, i - 1, j);
         }
@@ -146,9 +146,9 @@ int main(int argc, char* argv[])
     }
 
 // *    Last Row Iteration and Result Output
-     #pragma omp barrier
-      if(ID==0) printD(); 
-     #pragma omp barrier
+    // #pragma omp barrier
+    // if (ID == 0) printD();
+    // #pragma omp barrier
 
     // *    Free all row except last one - no synch necessary because only row=m is being used
 
