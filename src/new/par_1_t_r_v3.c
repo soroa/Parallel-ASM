@@ -1,4 +1,4 @@
-// Dynamic Programming - D table : m threads, O(n) in theory
+// Dynamic Programming - D table : nthreads threads, O(n) in theory
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -6,7 +6,7 @@
 #include <pthread.h>
 #include "rdtsc.h"
 
-const int nthreads = 4;
+int nthreads;
 int n, m, k;
 char *text, *pattern;
 int **D;
@@ -110,10 +110,11 @@ void *thread_routine(void *arg)
 
 int main(int argc, char *argv[])
 {
-    if (argc != 4)
-        printf("usage: ./exec textfile patternfile k");
+    if (argc != 5)
+        printf("usage: ./exec textfile patternfile k nthreads");
     readTextandPattern(argv, &n, &m);
     k = atoi(argv[3]);
+    nthreads = atoi(argv[4]);
     
     t1 = rdtsc();
 
