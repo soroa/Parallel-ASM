@@ -103,7 +103,7 @@ int main(int argc, char *argv[])
 
 
 
-  static const int NUMBER_OF_THREADS = 4;
+     omp_set_num_threads(NUMBER_OF_THREADS);
   #pragma omp parallel
   {
     int nthreads;
