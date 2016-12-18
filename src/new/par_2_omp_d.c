@@ -181,7 +181,7 @@ int main(int argc, char *argv[])
         // if (ID == 0)      printC();
 
 
-        #pragma omp barrier
+        // #pragma omp barrier
 
 
         //**********************************************************
