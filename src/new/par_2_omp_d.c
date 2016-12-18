@@ -104,7 +104,7 @@ int main(int argc, char *argv[])
         C[i] = (int *)malloc((n - m + 2 * k + 3) * sizeof(int));
 
 
-    printf("C allocated \n ");
+    // printf("C allocated \n ");
 
 
 
