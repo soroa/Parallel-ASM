@@ -6,6 +6,7 @@
 #include <limits.h>
 #include <pthread.h>
 #include <omp.h>
+#include "rdtsc.h"
 
 int n, m, k;
 char *text, *pattern;
@@ -88,12 +89,16 @@ void readTextandPattern(char *argv[], int *p_n, int *p_m)
 // }
 
 int main(int argc, char *argv[])
-{
+{     unsigned long long t1, t2;
+
+    t1 = rdtsc();
     if (argc != 5) {
         printf("\n usage: ./exec text pattern k n_threads \n \n ");
         return 0;
     }
     readTextandPattern(argv, &n, &m);
+      printf("file read n is %d: \n", n);
+
     k = atoi(argv[3]);
     NUMBER_OF_THREADS = atoi(argv[4]);
 
@@ -110,7 +115,8 @@ int main(int argc, char *argv[])
 
      omp_set_num_threads(NUMBER_OF_THREADS);
     #pragma omp parallel
-    {
+    { 
+
         int nthreads;
         nthreads = omp_get_num_threads();
 
@@ -212,6 +218,8 @@ int main(int argc, char *argv[])
 
     free(C);
 
+  t2 = rdtsc();
+  printf("%llu \n", t2 - t1);
 
 
 

@@ -11,7 +11,7 @@
 int n, m, k;
 char *text, *pattern;
 int **C;
-static const int NUMBER_OF_THREADS = 4;
+int NUMBER_OF_THREADS;
 
 
 void set_C_table(int i, int j, int value)
@@ -89,7 +89,10 @@ void printC() {
 }
 
 int main(int argc, char *argv[])
-{ unsigned long long t1, t2;
+{ 
+  unsigned long long t1, t2;
+
+  printf("hello");
   t1 = rdtsc();
   if (argc != 4) {
     printf("\n usage: ./exec text pattern k \n \n ");
@@ -97,6 +100,7 @@ int main(int argc, char *argv[])
   }
 
   readTextandPattern(argv, &n, &m);
+
   k = atoi(argv[3]);
   int not_initialized = -2;
 

@@ -14,7 +14,7 @@
 int n, m, k;
 char *text, *pattern;
 int **C;
-static const int NUMBER_OF_THREADS = 8;
+int NUMBER_OF_THREADS;
 short *initializedLines;
 
 

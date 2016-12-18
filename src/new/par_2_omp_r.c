@@ -80,9 +80,10 @@ void readTextandPattern(char *argv[], int *p_n, int *p_m)
 
 
 int main(int argc, char *argv[])
-{
+{ 
 
   unsigned long long t1, t2;
+
   t1 = rdtsc();
   if (argc != 5) {
     printf("\n usage: ./exec text pattern k n_cores \n \n ");
