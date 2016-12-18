@@ -74,18 +74,18 @@ void readTextandPattern(char *argv[], int *p_n, int *p_m)
 
 
 
-void printC() {
+// void printC() {
 
-    for (int j = 0; j < k + 2; j++) {
-        for (int i = 0; i < n - m + 2 * k + 3; i++) {
-            printf("|%d| ", C[j][i]);
-        }
-        printf("\n");
-    }
-    printf("\n\n\n");
+//     for (int j = 0; j < k + 2; j++) {
+//         for (int i = 0; i < n - m + 2 * k + 3; i++) {
+//             printf("|%d| ", C[j][i]);
+//         }
+//         printf("\n");
+//     }
+//     printf("\n\n\n");
 
 
-}
+// }
 
 int main(int argc, char *argv[])
 {
@@ -177,7 +177,7 @@ int main(int argc, char *argv[])
 
         #pragma omp barrier
 
-        // if (ID == 0)      printC();
+   
 
 
         // #pragma omp barrier
