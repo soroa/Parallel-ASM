@@ -29,7 +29,6 @@ int get_C_table(int i, int j)
 void setCDiagonalElem(int diag, int e, int value) {
 
     C[e + 1][diag - e + k + 1] = value;
-
 }
 
 int getCDiagonalElem(int diag, int e) {
